@@ -1,0 +1,31 @@
+mapper:
+  identity: MYSQL
+  mappers: com.ginseng.utils.MyMapper
+  not-empty: false
+mybatis:
+  mapper-locations: classpath*:**/mapper/sg_*.xml
+  type-aliases-package: com.ginseng.pojo
+pagehelper:
+  helperDialect: mysql
+  params: count=countSql
+  supportMethodsArguments: true
+server:
+  port: 8080
+  tomcat:
+    uri-encoding: UTF-8
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      auto-commit: true
+      connection-test-query: SELECT 1
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 28740000
+      maximum-pool-size: 15
+      minimum-idle: 5
+      pool-name: DatebookHikariCP
+    password: qwr123
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://localhost:3306/sixins-dev?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&serverTimezone=GMT%2B8
+    username: root
