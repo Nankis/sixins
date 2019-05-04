@@ -6,8 +6,9 @@ import com.ginseng.pojo.vo.UsersVO;
 import com.ginseng.service.UserService;
 import com.ginseng.utils.IMoocJSONResult;
 import com.ginseng.utils.MD5Utils;
-import org.apache.commons.beanutils.BeanUtils;
+//import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,8 +52,9 @@ public class UserController {
         //通过vo去掉多余的字段,再返回给前端
         UsersVO usersVO = new UsersVO();
 
-        //通过深拷贝,拷贝相同字段 ,第一给参数是拷贝源,第二个是生成目标对象
-        BeanUtils.copyProperties(userResult, usersVO);
+        //通过深拷贝,拷贝相同字段 ,第一给参数是拷贝源,第二个是生成目标对象,注意,别导阿帕奇的BeanUtils
+//        BeanUtils.copyProperties(userResult, usersVO);
+        BeanUtils.copyProperties(userResult,usersVO);
 
         return IMoocJSONResult.ok(usersVO);
     }
