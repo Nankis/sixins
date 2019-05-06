@@ -58,4 +58,40 @@ public class UserController {
 
         return IMoocJSONResult.ok(usersVO);
     }
+
+//    /**
+//     * @Description: 上传用户头像
+//     */
+//    @PostMapping("/uploadFaceBase64")
+//    public IMoocJSONResult uploadFaceBase64(@RequestBody UsersBO userBO) throws Exception {
+//
+//        // 获取前端传过来的base64字符串, 然后转换为文件对象再上传
+//        String base64Data = userBO.getFaceData();
+//        String userFacePath = "C:\\" + userBO.getUserId() + "userface64.png";
+//        FileUtils.base64ToFile(userFacePath, base64Data);
+//
+//        // 上传文件到fastdfs
+//        MultipartFile faceFile = FileUtils.fileToMultipart(userFacePath);
+//        String url = fastDFSClient.uploadBase64(faceFile);
+//        System.out.println(url);
+//
+////		"dhawuidhwaiuh3u89u98432.png"
+////		"dhawuidhwaiuh3u89u98432_80x80.png"
+//
+//        // 获取缩略图的url
+//        String thump = "_80x80.";
+//        String arr[] = url.split("\\.");
+//        String thumpImgUrl = arr[0] + thump + arr[1];
+//
+//        // 更细用户头像
+//        Users user = new Users();
+//        user.setId(userBO.getUserId());
+//        user.setFaceImage(thumpImgUrl);
+//        user.setFaceImageBig(url);
+//
+//        Users result = userService.updateUserInfo(user);
+//
+//        return IMoocJSONResult.ok(result);
+//    }
+
 }
