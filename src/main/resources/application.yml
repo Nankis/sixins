@@ -29,3 +29,10 @@ spring:
     type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:mysql://localhost:3306/sixins-dev?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&serverTimezone=GMT%2B8
     username: root
+fdfs:
+  trackerList[0]: 118.89.138.232:22122
+  thumbImage:
+    width: 80
+    height: 80
+  connectTimeout: 601
+  soTimeout: 1501

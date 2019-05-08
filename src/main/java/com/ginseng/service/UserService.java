@@ -1,6 +1,8 @@
 package com.ginseng.service;
 
 import com.ginseng.pojo.Users;
+import com.ginseng.pojo.vo.UsersVO;
+import org.apache.catalina.User;
 
 public interface UserService {
 
@@ -27,5 +29,8 @@ public interface UserService {
 
     //用户注册
     public Users saveUser(Users users);
+
+    //修改用户的记录
+    public Users updateUserInfo(Users user);
 
 }

@@ -3,6 +3,7 @@ package com.ginseng.service.impl;
 import com.ginseng.mapper.UsersMapper;
 import com.ginseng.pojo.Users;
 import com.ginseng.service.UserService;
+import org.apache.catalina.User;
 import org.n3r.idworker.Sid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -57,6 +58,7 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public Users saveUser(Users users) {
 
@@ -69,5 +71,22 @@ public class UserServiceImpl implements UserService {
         usersMapper.insert(users);
 
         return users;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Override
+    public Users updateUserInfo(Users user) {
+
+        //根据用户的主键,全部做一个更新,selective是只更新有值的字段
+        usersMapper.updateByPrimaryKeySelective(user);
+
+        return queryUserById(user.getId());
+    }
+
+
+    // 不加这个的话,更新用户的数据,有一部分会为null
+    @Transactional(propagation = Propagation.SUPPORTS)
+    private Users queryUserById(String userId) {
+        return usersMapper.selectByPrimaryKey(userId);
     }
 }

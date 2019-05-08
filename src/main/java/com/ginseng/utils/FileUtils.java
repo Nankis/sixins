@@ -152,7 +152,7 @@ public class FileUtils {
         byte[] bs = Base64Utils.decodeFromString(data);
         // 使用apache提供的工具类操作流
         org.apache.commons.io.FileUtils.writeByteArrayToFile(new File(filePath), bs);
-        
+
         return true;
 	}
 }
