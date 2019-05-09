@@ -10,6 +10,7 @@ import com.ginseng.utils.FileUtils;
 import com.ginseng.utils.IMoocJSONResult;
 import com.ginseng.utils.MD5Utils;
 //import org.apache.commons.beanutils.BeanUtils;
+import org.apache.catalina.User;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,14 +73,14 @@ public class UserController {
         String base64Data = userBO.getFaceData();
         //创建临时文件路径
         String userFacePath = "D:\\" + userBO.getUserId() + "userface64.png";
-        System.err.println(userFacePath);
+//        System.err.println(userFacePath);
         FileUtils.base64ToFile(userFacePath, base64Data);
 
         //MultipartFIle是Spring提供的一种数据类型
         //上传文件到fastdfs
         MultipartFile faceFile = FileUtils.fileToMultipart(userFacePath);
         String url = fastDFSClient.uploadBase64(faceFile);
-        System.out.println(url);
+//        System.out.println(url);
 
         //图片上传后,会生成一张大图和一张缩略图
         //获取缩略图的url
@@ -92,9 +93,28 @@ public class UserController {
         user.setId(userBO.getUserId());
         user.setFaceImage(thumpImgUrl);
         user.setFaceImageBig(url);
-        userService.updateUserInfo(user);
 
-        return IMoocJSONResult.ok(user);
+        //对象更新后,需要用最新返回的对象
+        Users result = userService.updateUserInfo(user);
+
+        return IMoocJSONResult.ok(result);
     }
+
+    //更新用户昵称
+    @PostMapping("/setNickname")
+    public IMoocJSONResult setNickname(@RequestBody UsersBO userBO) throws Exception {
+        Users user = new Users();
+        user.setId(userBO.getUserId());
+
+        //需要添加限制前端传来的昵称不能为空
+        if (userBO.getNickname()==null||userBO.getNickname().equals(""))
+            user.setNickname("昵称不能为空");
+        else
+            user.setNickname(userBO.getNickname());
+
+        Users result = userService.updateUserInfo(user);
+        return IMoocJSONResult.ok(result);
+    }
+
 
 }
