@@ -28,7 +28,7 @@ public class QRCodeUtils {
 		int width=300;      		//图片的宽度
         int height=300;     		//图片的高度
         String format="png";    	//图片的格式
-//        String content="风间影月";     //内容
+//        String content="吃人参的龙呀";     //内容
 
         /**
          * 定义二维码的参数

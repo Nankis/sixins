@@ -108,7 +108,7 @@ public class UserController {
 
         //需要添加限制前端传来的昵称不能为空
         if (userBO.getNickname()==null||userBO.getNickname().equals(""))
-            user.setNickname("昵称不能为空");
+            user.setNickname("昵称非法!");
         else
             user.setNickname(userBO.getNickname());
 
