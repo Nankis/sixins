@@ -165,5 +165,17 @@ public class UserController {
         return IMoocJSONResult.ok();
     }
 
+    //查询添加好友请求
+    @PostMapping("/queryFriendRequests")
+    public IMoocJSONResult queryFriendRequests(String userId) {
+        // 0. 判断userId不能为空
+        if (StringUtils.isBlank(userId)) {
+            return IMoocJSONResult.errorMsg("");
+        }
+
+        //1.查询用户接收到的好友申请
+        return IMoocJSONResult.ok(userService.queryFriendRequestList(userId));
+
+    }
 
 }

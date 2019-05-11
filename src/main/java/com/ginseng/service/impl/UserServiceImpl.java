@@ -4,14 +4,15 @@ import com.ginseng.enums.SearchFriendsStatusEnum;
 import com.ginseng.mapper.FriendsRequestMapper;
 import com.ginseng.mapper.MyFriendsMapper;
 import com.ginseng.mapper.UsersMapper;
+import com.ginseng.mapper.UsersMapperCustom;
 import com.ginseng.pojo.FriendsRequest;
 import com.ginseng.pojo.MyFriends;
 import com.ginseng.pojo.Users;
+import com.ginseng.pojo.vo.FriendRequestVO;
 import com.ginseng.service.UserService;
 import com.ginseng.utils.FastDFSClient;
 import com.ginseng.utils.FileUtils;
 import com.ginseng.utils.QRCodeUtils;
-import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import org.n3r.idworker.Sid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,9 +22,9 @@ import org.springframework.web.multipart.MultipartFile;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
-import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -52,6 +53,10 @@ public class UserServiceImpl implements UserService {
     @Resource
     @Autowired
     private FriendsRequestMapper friendsRequestMapper;
+
+    @Resource
+    @Autowired
+    private UsersMapperCustom usersMapperCustom;
 
     @Transactional(propagation = Propagation.SUPPORTS)
     @Override
@@ -193,9 +198,13 @@ public class UserServiceImpl implements UserService {
             request.setRequestDateTime(new Date());
             friendsRequestMapper.insert(request);
         }
-
         //否则什么也不做
+    }
 
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Override
+    public List<FriendRequestVO> queryFriendRequestList(String acceptUserId) {
+        return usersMapperCustom.queryFriendRequestList(acceptUserId);
     }
 
 

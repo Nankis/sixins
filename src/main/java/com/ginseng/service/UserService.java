@@ -1,8 +1,11 @@
 package com.ginseng.service;
 
 import com.ginseng.pojo.Users;
+import com.ginseng.pojo.vo.FriendRequestVO;
 import com.ginseng.pojo.vo.UsersVO;
 import org.apache.catalina.User;
+
+import java.util.List;
 
 public interface UserService {
 
@@ -42,4 +45,7 @@ public interface UserService {
 
     //发送添加好友请求,并保存到数据库里
     public void sendFriendRequest(String myUserId, String friendUsername);
+
+    //查询好友添加请求
+    public List<FriendRequestVO> queryFriendRequestList(String acceptUserId);
 }
