@@ -48,4 +48,12 @@ public interface UserService {
 
     //查询好友添加请求
     public List<FriendRequestVO> queryFriendRequestList(String acceptUserId);
+
+    //删除好友请求记录
+    public void deleteFriendRequest(String sendUserId, String acceptUserId);
+
+    //通过好友请求
+    //1.保存好友  2.逆向保存好友   3.删除好友的请求记录
+    public void passFriendRequest(String sendUserId, String acceptUserId);
+
 }

@@ -1,6 +1,7 @@
 package com.ginseng.controller;
 
 
+import com.ginseng.enums.OperatorFriendRequestTypeEnum;
 import com.ginseng.enums.SearchFriendsStatusEnum;
 import com.ginseng.pojo.Users;
 import com.ginseng.pojo.bo.UsersBO;
@@ -175,7 +176,34 @@ public class UserController {
 
         //1.查询用户接收到的好友申请
         return IMoocJSONResult.ok(userService.queryFriendRequestList(userId));
-
     }
 
+
+    //接收方通过或忽略好友请求
+    @PostMapping("/operFriendRequest")
+    public IMoocJSONResult operFriendRequest(String acceptUserId, String sendUserId, Integer operType) {
+        // 0. acceptUserId sendUserId operType不能为空
+        if (StringUtils.isBlank(acceptUserId)
+                || StringUtils.isBlank(sendUserId)
+                || operType == null) {
+            return IMoocJSONResult.errorMsg("");
+        }
+
+        // 1.如果operType 没有对应的枚举值,则直接抛出空错误
+        if (StringUtils.isBlank(OperatorFriendRequestTypeEnum.getMsgByType(operType))) {
+            return IMoocJSONResult.errorMsg("");
+        }
+
+        if (operType == OperatorFriendRequestTypeEnum.IGNORE.type) {
+            //2. 判断如果忽略好友请求,则直接删除好友请求的数据库表记录
+            //注意 这里的两个参数位置,不能相反
+            userService.deleteFriendRequest(sendUserId, acceptUserId);
+        } else if (operType == OperatorFriendRequestTypeEnum.PASS.type) {
+            //3. 判断如果是通过好友请求,则互相增加好友记录到数据库对应的表
+            //然后删除好友请求的数据库表记录
+            userService.passFriendRequest(sendUserId, acceptUserId);
+        }
+
+        return IMoocJSONResult.ok();
+    }
 }
