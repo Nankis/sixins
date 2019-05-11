@@ -1,11 +1,17 @@
 package com.ginseng.service.impl;
 
+import com.ginseng.enums.SearchFriendsStatusEnum;
+import com.ginseng.mapper.FriendsRequestMapper;
+import com.ginseng.mapper.MyFriendsMapper;
 import com.ginseng.mapper.UsersMapper;
+import com.ginseng.pojo.FriendsRequest;
+import com.ginseng.pojo.MyFriends;
 import com.ginseng.pojo.Users;
 import com.ginseng.service.UserService;
 import com.ginseng.utils.FastDFSClient;
 import com.ginseng.utils.FileUtils;
 import com.ginseng.utils.QRCodeUtils;
+import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import org.n3r.idworker.Sid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +23,7 @@ import tk.mybatis.mapper.entity.Example;
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -37,6 +44,14 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private FastDFSClient fastDFSClient;
+
+    @Resource
+    @Autowired
+    private MyFriendsMapper myFriendsMapper;
+
+    @Resource
+    @Autowired
+    private FriendsRequestMapper friendsRequestMapper;
 
     @Transactional(propagation = Propagation.SUPPORTS)
     @Override
@@ -117,4 +132,71 @@ public class UserServiceImpl implements UserService {
     public Users queryUserById(String userId) {
         return usersMapper.selectByPrimaryKey(userId);
     }
+
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public Integer preconditionSearchFriends(String myUserId, String friendUsername) {
+        //前置条件
+        //1. 搜索的用户如果不存在,返回"无此用户"
+        Users user = queryUserInfoByUsername(friendUsername);
+        if (user == null) {
+            return SearchFriendsStatusEnum.USER_NOT_EXIST.status;
+        }
+
+        //2. 搜索的帐号是你自己的,返回"不能添加自己"
+        if (user.getId().equals(myUserId)) {
+            return SearchFriendsStatusEnum.NOT_YOURSELF.status;
+        }
+
+        //3. 搜索的帐号已经是你的好友,返回"该用户已经是你的好友"
+        Example mfe = new Example(MyFriends.class);
+        Example.Criteria mfc = mfe.createCriteria();
+        mfc.andEqualTo("myUserId", myUserId);
+        mfc.andEqualTo("myFriendUserId", user.getId());
+        MyFriends myFriendsRel = myFriendsMapper.selectOneByExample(mfe);
+        if (myFriendsRel != null) {
+            return SearchFriendsStatusEnum.ALREADY_FRIENDS.status;
+        }
+        return SearchFriendsStatusEnum.SUCCESS.status;
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public Users queryUserInfoByUsername(String username) {
+        Example ue = new Example(Users.class);
+        Example.Criteria uc = ue.createCriteria();
+        uc.andEqualTo("username", username);
+        return usersMapper.selectOneByExample(ue);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Override
+    public void sendFriendRequest(String myUserId, String friendUsername) {
+        //根据用户名 查询出朋友信息
+        Users friend = queryUserInfoByUsername(friendUsername);
+
+        //1.查询发送好友请求记录表
+        Example fre = new Example(FriendsRequest.class);
+        Example.Criteria frc = fre.createCriteria();
+        frc.andEqualTo("sendUserId", myUserId);
+        frc.andEqualTo("acceptUserId", friend.getId());
+        FriendsRequest friendsRequest = friendsRequestMapper.selectOneByExample(fre);
+        if (friendsRequest == null) {
+            //2. 如果不是你的好友,并且好友记录没有被添加,则新增好友请求记录
+            String requestId = sid.nextShort();
+
+            FriendsRequest request = new FriendsRequest();
+            request.setId(requestId);
+            request.setSendUserId(myUserId);
+            request.setAcceptUserId(friend.getId());
+            request.setRequestDateTime(new Date());
+            friendsRequestMapper.insert(request);
+        }
+
+        //否则什么也不做
+
+    }
+
+
 }

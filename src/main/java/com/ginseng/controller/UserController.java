@@ -1,6 +1,7 @@
 package com.ginseng.controller;
 
 
+import com.ginseng.enums.SearchFriendsStatusEnum;
 import com.ginseng.pojo.Users;
 import com.ginseng.pojo.bo.UsersBO;
 import com.ginseng.pojo.vo.UsersVO;
@@ -107,13 +108,61 @@ public class UserController {
         user.setId(userBO.getUserId());
 
         //需要添加限制前端传来的昵称不能为空
-        if (userBO.getNickname()==null||userBO.getNickname().equals(""))
+        if (userBO.getNickname() == null || userBO.getNickname().equals(""))
             user.setNickname("昵称非法!");
         else
             user.setNickname(userBO.getNickname());
 
         Users result = userService.updateUserInfo(user);
         return IMoocJSONResult.ok(result);
+    }
+
+    //搜索用户接口,根据帐号做匹配查询,而不是模糊查询
+    @PostMapping("/search")
+    public IMoocJSONResult searchUser(String myUserId, String friendUsername) throws Exception {
+        // 0. 判断myUserId friendUsername 不能为空
+        if (StringUtils.isBlank(myUserId) || StringUtils.isBlank(friendUsername)) {
+            return IMoocJSONResult.errorMsg("");
+        }
+
+        //前置条件
+        //1. 搜索的用户如果不存在,返回"无此用户"
+        //2. 搜索的帐号是你自己的,返回"不能添加自己"
+        //3. 搜索的帐号已经是你的好友,返回"该用户已经是你的好友"
+        Integer status = userService.preconditionSearchFriends(myUserId, friendUsername);
+        if (status == SearchFriendsStatusEnum.SUCCESS.status) {
+            Users user = userService.queryUserInfoByUsername(friendUsername);
+            UsersVO userVO = new UsersVO();
+            BeanUtils.copyProperties(user, userVO);
+            return IMoocJSONResult.ok(userVO);
+        } else {
+            String errorMsg = SearchFriendsStatusEnum.getMsgByKey(status);
+            return IMoocJSONResult.errorMsg(errorMsg);
+        }
+    }
+
+
+    //发送添加好友请求
+    @PostMapping("/addFriendRequest")
+    public IMoocJSONResult addFriendRequest(String myUserId, String friendUsername) throws Exception {
+        // 0. 判断myUserId friendUsername 不能为空
+        if (StringUtils.isBlank(myUserId) || StringUtils.isBlank(friendUsername)) {
+            return IMoocJSONResult.errorMsg("");
+        }
+
+        //前置条件
+        //1. 搜索的用户如果不存在,返回"无此用户"
+        //2. 搜索的帐号是你自己的,返回"不能添加自己"
+        //3. 搜索的帐号已经是你的好友,返回"该用户已经是你的好友"
+        Integer status = userService.preconditionSearchFriends(myUserId, friendUsername);
+        if (status == SearchFriendsStatusEnum.SUCCESS.status) {
+            userService.sendFriendRequest(myUserId, friendUsername);
+        } else {
+            String errorMsg = SearchFriendsStatusEnum.getMsgByKey(status);
+            return IMoocJSONResult.errorMsg(errorMsg);
+        }
+
+        return IMoocJSONResult.ok();
     }
 
 

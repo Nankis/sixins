@@ -33,4 +33,13 @@ public interface UserService {
     //修改用户的记录
     public Users updateUserInfo(Users user);
 
+    //搜索想添加用户的前置条件
+    public Integer preconditionSearchFriends(String myUserId, String friendUsername);
+
+
+    //根据用户名查询用户对象
+    public Users queryUserInfoByUsername(String username);
+
+    //发送添加好友请求,并保存到数据库里
+    public void sendFriendRequest(String myUserId, String friendUsername);
 }
