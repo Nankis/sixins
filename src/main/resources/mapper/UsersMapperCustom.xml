@@ -21,25 +21,24 @@
 	
 	</select>
 	
-	<!---->
-	<!--<select id="queryMyFriends" resultType="com.imooc.pojo.vo.MyFriendsVO" -->
-			<!--parameterType="String">-->
-		<!---->
-		<!--select -->
-			<!--u.id as friendUserId,-->
-			<!--u.username as friendUsername,-->
-			<!--u.face_image as friendFaceImage,-->
-			<!--u.nickname as friendNickname-->
-		<!--from-->
-			<!--my_friends mf-->
-		<!--left join -->
-			<!--users u-->
-		<!--on -->
-			<!--u.id = mf.my_friend_user_id-->
-		<!--where -->
-			<!--mf.my_user_id = #{userId}-->
-	<!---->
-	<!--</select>-->
+	<select id="queryMyFriends" resultType="com.ginseng.pojo.vo.MyFriendsVO"
+			parameterType="String">
+		select
+			u.id as friendUserId,
+			u.username as friendUsername,
+			u.face_image as friendFaceImage,
+			u.nickname as friendNickname
+		from
+			my_friends mf
+		left join
+			users u
+		on
+			u.id = mf.my_friend_user_id
+		where
+			mf.my_user_id = #{userId}
+
+	</select>
+
 	<!---->
 	<!--&lt;!&ndash; 批处理更新消息为已签收 &ndash;&gt;-->
 	<!--<update id="batchUpdateMsgSigned">-->

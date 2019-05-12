@@ -2,6 +2,7 @@ package com.ginseng.service;
 
 import com.ginseng.pojo.Users;
 import com.ginseng.pojo.vo.FriendRequestVO;
+import com.ginseng.pojo.vo.MyFriendsVO;
 import com.ginseng.pojo.vo.UsersVO;
 import org.apache.catalina.User;
 
@@ -55,5 +56,8 @@ public interface UserService {
     //通过好友请求
     //1.保存好友  2.逆向保存好友   3.删除好友的请求记录
     public void passFriendRequest(String sendUserId, String acceptUserId);
+
+    //查询通讯录好友列表
+    public List<MyFriendsVO> queryMyFriends(String userId);
 
 }

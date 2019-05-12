@@ -3,8 +3,10 @@ package com.ginseng.controller;
 
 import com.ginseng.enums.OperatorFriendRequestTypeEnum;
 import com.ginseng.enums.SearchFriendsStatusEnum;
+import com.ginseng.pojo.MyFriends;
 import com.ginseng.pojo.Users;
 import com.ginseng.pojo.bo.UsersBO;
+import com.ginseng.pojo.vo.MyFriendsVO;
 import com.ginseng.pojo.vo.UsersVO;
 import com.ginseng.service.UserService;
 import com.ginseng.utils.FastDFSClient;
@@ -18,6 +20,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("u")  //命名空间
@@ -203,7 +207,22 @@ public class UserController {
             //然后删除好友请求的数据库表记录
             userService.passFriendRequest(sendUserId, acceptUserId);
         }
-
-        return IMoocJSONResult.ok();
+        //4.数据库查询好友列表
+        List<MyFriendsVO> myFriends = userService.queryMyFriends(acceptUserId);
+        return IMoocJSONResult.ok(myFriends);
     }
+
+
+    //查询通讯录好友列表
+    @PostMapping("/myFriends")
+    public IMoocJSONResult myFriends(String userId) {
+        // 0. 判断userId不能为空
+        if (StringUtils.isBlank(userId)) {
+            return IMoocJSONResult.errorMsg("");
+        }
+        //1.数据库查询好友列表
+        List<MyFriendsVO> myFriends = userService.queryMyFriends(userId);
+        return IMoocJSONResult.ok(myFriends);
+    }
+
 }

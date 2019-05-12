@@ -9,6 +9,7 @@ import com.ginseng.pojo.FriendsRequest;
 import com.ginseng.pojo.MyFriends;
 import com.ginseng.pojo.Users;
 import com.ginseng.pojo.vo.FriendRequestVO;
+import com.ginseng.pojo.vo.MyFriendsVO;
 import com.ginseng.service.UserService;
 import com.ginseng.utils.FastDFSClient;
 import com.ginseng.utils.FileUtils;
@@ -227,6 +228,7 @@ public class UserServiceImpl implements UserService {
         deleteFriendRequest(sendUserId, acceptUserId);
     }
 
+
     @Transactional(propagation = Propagation.REQUIRED)
     public void saveFriends(String sendUserId, String acceptUserId) {
         MyFriends myFriends = new MyFriends();
@@ -238,5 +240,12 @@ public class UserServiceImpl implements UserService {
 
     }
 
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Override
+    public List<MyFriendsVO> queryMyFriends(String userId) {
+        List<MyFriendsVO> myFriends = usersMapperCustom.queryMyFriends(userId);
+        return myFriends;
+    }
 
 }
