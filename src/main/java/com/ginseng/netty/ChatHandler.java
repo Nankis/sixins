@@ -28,12 +28,19 @@ public class ChatHandler extends SimpleChannelInboundHandler<TextWebSocketFrame>
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) {
         //获取客户端传输来的消息
         String context = msg.text();
-        System.out.println("接收到的数据:" + context);
+//        System.out.println("接收到的数据:" + context);
 
-        for (Channel channel : users) {
-            channel.writeAndFlush(new TextWebSocketFrame("[服务器在]" + LocalDateTime.now()
-                    + "接收消息:" + context));
-        }
+        //1.获取客户端发来的消息
+
+
+
+        //2.判断消息类型,根据不同的类型来处理不同的业务
+        //2.1 当websocket 第一次open的时候 初始化channel,把用户的channel和userid关联起来
+        //2.2 聊天类型的消息,把聊天记录保存到数据库.(可以加密),同时标记消息的签收状态[未签收]
+        //2.3 签收消息类型,针对具体的消息进行签收,修改数据库中对应消息的签收状态[已签收]
+        //2.4 心跳类型的消息(前端和后端)
+
+
     }
 
 

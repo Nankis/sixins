@@ -207,7 +207,7 @@ public class UserController {
             //然后删除好友请求的数据库表记录
             userService.passFriendRequest(sendUserId, acceptUserId);
         }
-        //4.数据库查询好友列表
+        //4.数据库查询好友列表  用于更新
         List<MyFriendsVO> myFriends = userService.queryMyFriends(acceptUserId);
         return IMoocJSONResult.ok(myFriends);
     }
