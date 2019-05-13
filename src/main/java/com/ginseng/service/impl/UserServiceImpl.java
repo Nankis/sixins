@@ -1,10 +1,9 @@
 package com.ginseng.service.impl;
 
+import com.ginseng.enums.MsgSignFlagEnum;
 import com.ginseng.enums.SearchFriendsStatusEnum;
-import com.ginseng.mapper.FriendsRequestMapper;
-import com.ginseng.mapper.MyFriendsMapper;
-import com.ginseng.mapper.UsersMapper;
-import com.ginseng.mapper.UsersMapperCustom;
+import com.ginseng.mapper.*;
+import com.ginseng.netty.ChatMsg;
 import com.ginseng.pojo.FriendsRequest;
 import com.ginseng.pojo.MyFriends;
 import com.ginseng.pojo.Users;
@@ -58,6 +57,10 @@ public class UserServiceImpl implements UserService {
     @Resource
     @Autowired
     private UsersMapperCustom usersMapperCustom;
+
+    @Resource
+    @Autowired
+    private ChatMsgMapper chatMsgMapper;
 
     @Transactional(propagation = Propagation.SUPPORTS)
     @Override
@@ -247,5 +250,32 @@ public class UserServiceImpl implements UserService {
         List<MyFriendsVO> myFriends = usersMapperCustom.queryMyFriends(userId);
         return myFriends;
     }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Override
+    public String saveMsg(ChatMsg chatMsg) {
+        //由于定义的ChatMsg与netty重名了,所以用全路径区分
+       com.ginseng.pojo.ChatMsg msgDB = new com.ginseng.pojo.ChatMsg();
+       String msgId = sid.nextShort();
+
+       msgDB.setId(msgId);
+       msgDB.setAcceptUserId(chatMsg.getReceiverId());
+       msgDB.setSendUserId(chatMsg.getSenderId());
+       msgDB.setCreateTime(new Date());
+       msgDB.setSignFlag(MsgSignFlagEnum.unsign.type);
+       msgDB.setMsg(chatMsg.getMsg());
+
+       chatMsgMapper.insert(msgDB);
+
+        return msgId;
+    }
+
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Override
+    public void updateMsgSigned(List<String> msgIdList) {
+        usersMapperCustom.batchUpdateMsgSigned(msgIdList);
+    }
+
 
 }

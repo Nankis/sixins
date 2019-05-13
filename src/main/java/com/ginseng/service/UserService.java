@@ -1,5 +1,6 @@
 package com.ginseng.service;
 
+import com.ginseng.netty.ChatMsg;
 import com.ginseng.pojo.Users;
 import com.ginseng.pojo.vo.FriendRequestVO;
 import com.ginseng.pojo.vo.MyFriendsVO;
@@ -60,4 +61,11 @@ public interface UserService {
     //查询通讯录好友列表
     public List<MyFriendsVO> queryMyFriends(String userId);
 
+
+    //此处需要的是netty包下自定义的ChatMsG
+    //保存聊天消息到数据库
+    public String saveMsg(ChatMsg chatMsg);
+
+    //批量签收消息
+    public void updateMsgSigned(List<String> msgIdList);
 }
