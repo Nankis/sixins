@@ -68,4 +68,9 @@ public interface UserService {
 
     //批量签收消息
     public void updateMsgSigned(List<String> msgIdList);
+
+    //获取未签收消息列表
+    public List<com.ginseng.pojo.ChatMsg> getUnReadMsgList(String acceptUserId);
+
+
 }

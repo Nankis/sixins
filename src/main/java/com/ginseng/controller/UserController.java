@@ -14,6 +14,7 @@ import com.ginseng.utils.FileUtils;
 import com.ginseng.utils.IMoocJSONResult;
 import com.ginseng.utils.MD5Utils;
 //import org.apache.commons.beanutils.BeanUtils;
+import io.netty.util.internal.StringUtil;
 import org.apache.catalina.User;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -149,7 +150,8 @@ public class UserController {
 
     //发送添加好友请求
     @PostMapping("/addFriendRequest")
-    public IMoocJSONResult addFriendRequest(String myUserId, String friendUsername) throws Exception {
+    public IMoocJSONResult addFriendRequest(String myUserId, String friendUsername)
+            throws Exception {
         // 0. 判断myUserId friendUsername 不能为空
         if (StringUtils.isBlank(myUserId) || StringUtils.isBlank(friendUsername)) {
             return IMoocJSONResult.errorMsg("");
@@ -185,7 +187,8 @@ public class UserController {
 
     //接收方通过或忽略好友请求
     @PostMapping("/operFriendRequest")
-    public IMoocJSONResult operFriendRequest(String acceptUserId, String sendUserId, Integer operType) {
+    public IMoocJSONResult operFriendRequest(String acceptUserId, String sendUserId,
+                                             Integer operType) {
         // 0. acceptUserId sendUserId operType不能为空
         if (StringUtils.isBlank(acceptUserId)
                 || StringUtils.isBlank(sendUserId)
@@ -223,6 +226,20 @@ public class UserController {
         //1.数据库查询好友列表
         List<MyFriendsVO> myFriends = userService.queryMyFriends(userId);
         return IMoocJSONResult.ok(myFriends);
+    }
+
+
+    // 用户手机端获取未签收的消息列表
+    @PostMapping("/getUnReadMsgList")
+    public IMoocJSONResult getUnReadMsgList(String acceptUserId) {
+        //0.userId 判断不能为空
+        if (StringUtils.isBlank(acceptUserId)) {
+            return IMoocJSONResult.errorMsg("");
+        }
+
+        //查询列表
+        List<com.ginseng.pojo.ChatMsg> unreadMsgList = userService.getUnReadMsgList(acceptUserId);
+        return IMoocJSONResult.ok(unreadMsgList);
     }
 
 }

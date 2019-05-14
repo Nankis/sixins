@@ -1,9 +1,12 @@
 package com.ginseng.service.impl;
 
+import com.ginseng.enums.MsgActionEnum;
 import com.ginseng.enums.MsgSignFlagEnum;
 import com.ginseng.enums.SearchFriendsStatusEnum;
 import com.ginseng.mapper.*;
 import com.ginseng.netty.ChatMsg;
+import com.ginseng.netty.DataContent;
+import com.ginseng.netty.UserChannelRel;
 import com.ginseng.pojo.FriendsRequest;
 import com.ginseng.pojo.MyFriends;
 import com.ginseng.pojo.Users;
@@ -12,7 +15,10 @@ import com.ginseng.pojo.vo.MyFriendsVO;
 import com.ginseng.service.UserService;
 import com.ginseng.utils.FastDFSClient;
 import com.ginseng.utils.FileUtils;
+import com.ginseng.utils.JsonUtils;
 import com.ginseng.utils.QRCodeUtils;
+import io.netty.channel.Channel;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.n3r.idworker.Sid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -229,6 +235,17 @@ public class UserServiceImpl implements UserService {
         saveFriends(acceptUserId, sendUserId);
         //删除请求记录表数据
         deleteFriendRequest(sendUserId, acceptUserId);
+
+        Channel sendChannel = UserChannelRel.get(sendUserId);
+        if (sendChannel != null) {
+            //使用websocket主动推送消息到请求发送者,更新他的通讯录列表为最新
+            DataContent dataContent = new DataContent();
+            dataContent.setAction(MsgActionEnum.PULL_FRIEND.type);
+
+            sendChannel.writeAndFlush(
+                    new TextWebSocketFrame(JsonUtils.objectToJson(dataContent)));
+        }
+
     }
 
 
@@ -255,17 +272,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public String saveMsg(ChatMsg chatMsg) {
         //由于定义的ChatMsg与netty重名了,所以用全路径区分
-       com.ginseng.pojo.ChatMsg msgDB = new com.ginseng.pojo.ChatMsg();
-       String msgId = sid.nextShort();
+        com.ginseng.pojo.ChatMsg msgDB = new com.ginseng.pojo.ChatMsg();
+        String msgId = sid.nextShort();
 
-       msgDB.setId(msgId);
-       msgDB.setAcceptUserId(chatMsg.getReceiverId());
-       msgDB.setSendUserId(chatMsg.getSenderId());
-       msgDB.setCreateTime(new Date());
-       msgDB.setSignFlag(MsgSignFlagEnum.unsign.type);
-       msgDB.setMsg(chatMsg.getMsg());
+        msgDB.setId(msgId);
+        msgDB.setAcceptUserId(chatMsg.getReceiverId());
+        msgDB.setSendUserId(chatMsg.getSenderId());
+        msgDB.setCreateTime(new Date());
+        msgDB.setSignFlag(MsgSignFlagEnum.unsign.type);
+        msgDB.setMsg(chatMsg.getMsg());
 
-       chatMsgMapper.insert(msgDB);
+        chatMsgMapper.insert(msgDB);
 
         return msgId;
     }
@@ -276,6 +293,22 @@ public class UserServiceImpl implements UserService {
     public void updateMsgSigned(List<String> msgIdList) {
         usersMapperCustom.batchUpdateMsgSigned(msgIdList);
     }
+
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public List<com.ginseng.pojo.ChatMsg> getUnReadMsgList(String acceptUserId) {
+
+        Example chatExample = new Example(com.ginseng.pojo.ChatMsg.class);
+        Example.Criteria chatCriteria = chatExample.createCriteria();
+        chatCriteria.andEqualTo("signFlag", 0);
+        chatCriteria.andEqualTo("acceptUserId", acceptUserId);
+
+        List<com.ginseng.pojo.ChatMsg> result = chatMsgMapper.selectByExample(chatExample);
+
+        return result;
+    }
+
 
 
 }
