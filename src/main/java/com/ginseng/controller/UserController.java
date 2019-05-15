@@ -58,8 +58,11 @@ public class UserController {
         } else {
             //1.2 注册
             user.setNickname(user.getUsername());
-            user.setFaceImage("");
-            user.setFaceImageBig("");
+
+            //需要添加默认头像,默认头像放在fastdfs服务器,图片路径存在服务器数据库地址
+            //如果图片服务器更变,则需要重新设置
+            user.setFaceImage("M00/00/00/Cmnl_1zbdxmAMMGNAAJZaZdJjTg378_80x80.png");
+            user.setFaceImageBig("M00/00/00/Cmnl_1zbdxmAMMGNAAJZaZdJjTg378.png");
             user.setPassword(MD5Utils.getMD5Str(user.getPassword()));
             userResult = userService.saveUser(user);
         }
