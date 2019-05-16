@@ -5,7 +5,6 @@ import com.ginseng.pojo.Users;
 import com.ginseng.pojo.vo.FriendRequestVO;
 import com.ginseng.pojo.vo.MyFriendsVO;
 import com.ginseng.pojo.vo.UsersVO;
-import org.apache.catalina.User;
 
 import java.util.List;
 

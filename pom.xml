@@ -14,6 +14,11 @@
     <name>sixins</name>
     <description>Demo project for Spring Boot</description>
 
+    <!--默认以jar包方式打包-->
+
+    <packaging>war</packaging>
+
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -26,9 +31,32 @@
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
 
+
+        <!--添加依赖,为了打包成war-->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+
+        <!--如果要用外置的tomcat 需要先排除内置的tomcat  加入<exclusion>如下语句-->
+        <!--如果报重复报错误 则需要删掉slf4j-log4j12-1.7.25.jar  或者用其他方法-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+               <exclusion>
+                   <groupId>org.springframework.boot</groupId>
+                   <artifactId>spring-boot-starter-tomcat</artifactId>
+               </exclusion>
+
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -54,6 +82,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-log4j</artifactId>
             <version>1.3.8.RELEASE</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>slf4j-log4j12</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- 阿里开源数据源 -->
@@ -163,15 +197,33 @@
             <version>3.3.3</version>
         </dependency>
 
+
+
     </dependencies>
 
+
+    <!--用插件打包-->
     <build>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+
+                <configuration>
+                    <mainClass>com.ginseng.SixinsApplication</mainClass>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
+        <finalName>sixins</finalName>
     </build>
+
+
 
 </project>

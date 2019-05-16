@@ -108,7 +108,11 @@ public class UserServiceImpl implements UserService {
         //用户注册的时候,为每个用户生成唯一的二维码
         //sixins_qrcode:[username]   可以进行加密
 
-        String qrCodePath = "D://users" + userId + "qrcode.png";
+        //Win10测试环境
+//        String qrCodePath = "D://users" + userId + "qrcode.png";
+
+        //Linux环境下 /fastdfs/tmp
+        String qrCodePath = "/fastdfs/tmp/users" + userId + "qrcode.png";
 
         //第一个参数是二维码图片路径,第二个是二维码内容
         qrCodeUtils.createQRCode(qrCodePath, "sixins_qrcode:" + user.getUsername());

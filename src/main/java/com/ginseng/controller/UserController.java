@@ -15,7 +15,6 @@ import com.ginseng.utils.IMoocJSONResult;
 import com.ginseng.utils.MD5Utils;
 //import org.apache.commons.beanutils.BeanUtils;
 import io.netty.util.internal.StringUtil;
-import org.apache.catalina.User;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +81,12 @@ public class UserController {
         //获取前端传来的图片base64字符串,然后转换为文件对象再上传
         String base64Data = userBO.getFaceData();
         //创建临时文件路径
-        String userFacePath = "D:\\" + userBO.getUserId() + "userface64.png";
+//        String userFacePath = "D:\\" + userBO.getUserId() + "userface64.png";
+
+        //Linux环境下临时目录
+        String userFacePath = "/fastdfs/tmp" + userBO.getUserId() + "userface64.png";
+
+
 //        System.err.println(userFacePath);
         FileUtils.base64ToFile(userFacePath, base64Data);
 
