@@ -26,4 +26,4 @@ https://www.bilibili.com/video/av52656734?pop_share=1
 
 ### 安卓下载体验:
 
-![安卓下载体验](http://prlg4oq1l.bkt.clouddn.com/v1_2apk.png)
+![安卓体验版](https://upload-images.jianshu.io/upload_images/6455343-b2311efb7a5000a9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
